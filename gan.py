@@ -356,8 +356,8 @@ class DCGANTrainer:
                               step=self.step)
                     t.save({
                         'epoch': epoch,
-                        'generator_state_dict': self.model.netG.state_dict(),
-                        'discriminator_state_dict': self.model.netD.state_dict(),
+                        'generator_state_dict': self.model.netG.hidden_layers[-2].state_dict(),
+                        'discriminator_state_dict': self.model.netD.hidden_layers[0].state_dict(),
                         'g_optimizer_state_dict': self.optG.state_dict(),
                         'd_optimizer_state_dict': self.optD.state_dict(),
                         'lossG': lossG,
