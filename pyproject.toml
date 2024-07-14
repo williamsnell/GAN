@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "gan"
+version = "0.1.0"
+description = ""
+authors = ["wsnell <aussiesnells@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+torch = "^2.3.1"
+einops = "^0.8.0"
+jaxtyping = "^0.2.33"
+wandb = "^0.17.4"
+torchinfo = "^1.8.0"
+gdown = "^5.2.0"
+datasets = "^2.20.0"
+pillow = "^10.4.0"
+matplotlib = "^3.9.1"
+torchvision = "^0.18.1"
+plotly = "^5.22.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
