@@ -358,10 +358,6 @@ class DCGANTrainer:
                         'epoch': epoch,
                         'generator_state_dict': self.model.netG.hidden_layers[-2].state_dict(),
                         'discriminator_state_dict': self.model.netD.hidden_layers[0].state_dict(),
-                        'g_optimizer_state_dict': self.optG.state_dict(),
-                        'd_optimizer_state_dict': self.optD.state_dict(),
-                        'lossG': lossG,
-                        'lossD': lossD,
                         },
                         f"{self.step}_model.pt")
 
