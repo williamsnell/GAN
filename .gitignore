@@ -1,6 +1,7 @@
 __pycache__
 *.pyc
 *.png
+.ipynb_checkpoints/
 
 wandb/
 
