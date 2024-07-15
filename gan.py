@@ -1,3 +1,4 @@
+
 import matplotlib.pyplot as plt
 import sys
 import torch as t
@@ -255,7 +256,7 @@ class DCGANTrainer:
         self.criterion = nn.BCELoss()
 
         self.trainset = get_dataset(self.args.dataset)
-        self.trainloader = DataLoader(self.trainset, batch_size=args.batch_size, shuffle=True)
+        self.trainloader = DataLoader(self.trainset, batch_size=args.batch_size, shuffle=True, drop_last=True)
 
         batch, img_channels, img_height, img_width = next(iter(self.trainloader))[0].shape
         assert img_height == img_width
@@ -270,7 +271,7 @@ class DCGANTrainer:
         self.optG = t.optim.Adam(self.model.netG.parameters(), lr=args.lr, betas=args.betas)
         self.optD = t.optim.Adam(self.model.netD.parameters(), lr=args.lr, betas=args.betas, maximize=True)
         
-        [initialize_weights(model) for model in self.model.modules()]
+        # [initialize_weights(model) for model in self.model.modules()]
         
         wandb.init(project=self.args.wandb_project, name=self.args.wandb_name)
         wandb.watch((self.model.netG.hidden_layers[-2], self.model.netD.hidden_layers[0]), log_freq=20)
@@ -315,7 +316,7 @@ class DCGANTrainer:
         Performs evaluation by generating 8 instances of random noise and passing them through
         the generator.
         '''
-        noise = t.randn(8, self.args.latent_dim_size).to(device)
+        noise = t.randn(self.args.batch_size, self.args.latent_dim_size).to(device)
         return self.model.netG(noise)
 
 
@@ -325,6 +326,14 @@ class DCGANTrainer:
         '''
         self.step = 0
         last_log_time = time.time()
+
+        t.save({
+                        'generator_state_dict': self.model.netG.hidden_layers[-2].state_dict(),
+                        'discriminator_state_dict': self.model.netD.hidden_layers[0].state_dict(),
+                        },
+                        f"{self.step+100_000_000}_model.pt")
+
+
 
         for epoch in range(self.args.epochs):
 
@@ -359,8 +368,7 @@ class DCGANTrainer:
                         'generator_state_dict': self.model.netG.hidden_layers[-2].state_dict(),
                         'discriminator_state_dict': self.model.netD.hidden_layers[0].state_dict(),
                         },
-                        f"{self.step}_model.pt")
+                        f"{self.step+100_000_000}_model.pt")
 
         wandb.finish()
-
 
