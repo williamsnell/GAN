@@ -1,0 +1,73 @@
+from PIL import Image
+import numpy as np
+import cv2
+from pathlib import Path
+
+video_name = "gan_full.mp4"
+
+image_steps = []
+
+for image in Path("./gan_full/images/faces").glob("*.png"):
+    print(str(image.stem))
+
+    image_steps += [int(image.stem.strip("images_").split("_")[0])]
+
+# map sequence number (in the discriminator/generator layer exports)
+# to the face images
+map = {i: number for i, number in enumerate(sorted(image_steps)[::4])}
+
+print(map)
+
+framerate = 25 # frames per second
+
+duration_per_image = np.logspace(0.08, -1, len(map))
+frames_per_image = np.round(duration_per_image * framerate) 
+
+height = 480 + 480 + 40 + 128
+width = max((128 + 10) * 4, 640)
+
+video = cv2.VideoWriter(video_name, cv2.VideoWriter_fourcc(*'mp4v'), framerate, (width, height))
+
+face_pad = 10
+discrim_pad = -100
+face_scale = 1
+face_offset = (width - face_pad*4 - 64 * 4 * face_scale)//2
+face_start = 20
+
+
+total_frames = 10 * framerate # 10 seconds
+frame_number = np.floor(np.cumsum(np.logspace(-1, 0.3, total_frames))) 
+
+# for n, (i, number) in zip(range(100), map.items()):
+for i in frame_number:
+    number = map[i]
+    faces = [cv2.imread(path) for path in Path("./gan_full/images/faces").glob(f"images_{number}_*.png")]
+    discrim = cv2.imread(Path(f"./gan_full/images/discriminator/{100_000_000 + i}.png"))
+    gen = cv2.imread(Path(f"./gan_full/images/generator/{100_000_000 + i}.png"))
+
+    # Image is shape (width, height, channel)
+    image = np.ones((height, width, 3), dtype=np.uint8) * 255 # Initialize as white
+
+
+    # Composite in the layers
+    face_end = face_start + faces[0].shape[0]
+
+    for i, face in enumerate(faces):
+        # upscale
+        image[face_start:face_end, face_offset + i * (face.shape[1] + face_pad) : face_offset + i * face_pad + (i+1)*face.shape[1]] = face
+
+
+
+    gen_start = face_end + face_pad
+    gen_end = gen_start + gen.shape[0]
+    image[gen_start:gen_end] = gen
+
+    discrim_start = gen_end + discrim_pad
+    discrim_end = discrim_start + discrim.shape[0]
+    image[discrim_start:discrim_end] = discrim
+
+    video.write(image)
+
+
+cv2.destroyAllWindows()
+video.release()

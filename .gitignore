@@ -8,3 +8,10 @@ wandb/
 *.pt
 
 data/
+
+*.zip
+*.mp4
+
+first_layer_8/
+gan_full/
+media/
