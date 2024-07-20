@@ -21,7 +21,6 @@ def get_available_images(project: str, run: str) -> Dict[str, List[str]]:
 
 def pull_images(images: List[str], out_path: str):
     api = wandb.Api()
-    "day5-gan/899kfp49/media/images/images_99912_72d30fdde2ee39797133.png"
     print(images)
     project, run, *_ = images[0].split("/")
     event = api.run(f"{project}/{run}")

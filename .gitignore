@@ -1,6 +1,7 @@
 __pycache__
 *.pyc
 *.png
+*.gz
 .ipynb_checkpoints/
 
 wandb/
@@ -14,4 +15,7 @@ data/
 
 first_layer_8/
 gan_full/
+div_4/
 media/
+
+cache/

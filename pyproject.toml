@@ -19,7 +19,8 @@ matplotlib = "^3.9.1"
 torchvision = "^0.18.1"
 plotly = "^5.22.0"
 numpy = "1.26.4"
-opencv-python = "^4.10.0.84"
+jupyter = "^1.0.0"
+lab = "^8.2"
 
 
 [build-system]
