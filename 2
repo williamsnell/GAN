@@ -19,7 +19,7 @@ class VideoSettings:
     pad_vertical: int = 10 # pixels
     height: int = 900 # pixels
     width: int = 640 # pixels
-    text_height: int = 60 # pixels
+    text_height: int = 50 # pixels
     hold_at_end: int = 5 # seconds
 
 # pre-process by getting all available images
@@ -58,12 +58,12 @@ def composite_frame(gen, discrim, faces, image_number, settings: VideoSettings):
     image = np.ones((settings.height, settings.width, 3), dtype=np.uint8) * 255 # Initialize as white
 
     inputs = [
-        np.asarray(write_text(f"Images seen: {image_number}", settings.width, 50, 220, 30)),
-        np.asarray(write_text("Generated Faces", settings.width, settings.text_height, 220, 30, titleFont)),
+        np.asarray(write_text(f"Images seen: {image_number}", settings.width, 50, 240, 30)),
+        np.asarray(write_text("Generated Faces", settings.width, settings.text_height, 240, 30, titleFont)),
         inputs[0],
-        np.asarray(write_text("Generator Last Layer", settings.width, settings.text_height, 200, 30, titleFont)),
+        np.asarray(write_text("Generator Last Layer", settings.width, settings.text_height, 240, 30), titleFont),
         inputs[1],
-        np.asarray(write_text("Discriminator First Layer", settings.width, settings.text_height, 200, 30, titleFont)),
+        np.asarray(write_text("Discriminator First Layer", settings.width, settings.text_height, 240, 30)),
         inputs[2],
             ]
 
@@ -152,7 +152,6 @@ def make_video(settings: VideoSettings, path, glob):
         # pad everything to give it a border between features
         gen = torch.nn.functional.pad(gen, (1, 1, 1, 1), "constant", gen.min())
         discrim = torch.nn.functional.pad(discrim, (1, 1, 1, 1), "constant", discrim.min())
-        faces = torch.nn.functional.pad(faces, (1, 1, 1, 1), "constant", 1)
 
         # rearrange everything into image shape
         gen = einops.rearrange(gen, "(feature1 feature2) channel height width -> (feature1 width) (feature2 height) channel", feature1=8) 
@@ -209,6 +208,6 @@ def cached_get_available_faces(project, run):
 
 if __name__ == '__main__':
     for layers in [8, 32, 64]:
-        settings = VideoSettings(f"first_layer_{layers}.mp4", duration=20, hold_at_end=5)
+        settings = VideoSettings(f"first_layer_{layers}.mp4", duration=1, hold_at_end=0)
 
         make_video(settings, Path("~/src/ai/gan/export/export/steps").expanduser(), f"discrim [{layers},*.pt")
